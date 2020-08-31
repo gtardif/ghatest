@@ -1,14 +1,29 @@
-name: Continuous integration
-
-on: [pull_request]
+name: Pull Request Comment Trigger Example
+on:
+  pull_request:
+  issue_comment:
+    types: [created]
 
 jobs:
-  build:
-    name: Build
+  hello:
     runs-on: ubuntu-latest
     steps:
-      - name: Test
-        run: echo "Testing"
+      - uses: khan/pull-request-comment-trigger@master
+        id: check
+        with:
+          trigger: '#hello'
+      - run: 'echo Found it!'
+        if: steps.check.outputs.triggered == 'true'
 
-      - name: Build
-        run: echo "Building"
+  eyes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: khan/pull-request-comment-trigger@master
+        id: check
+        with:
+          trigger: '#look'
+          reaction: eyes
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      - run: 'echo Found it!'
+        if: steps.check.outputs.triggered == 'true'
