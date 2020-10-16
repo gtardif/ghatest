@@ -1,29 +1,18 @@
 name: Pull Request Comment Trigger Example
 on:
-  pull_request:
-  issue_comment:
-    types: [created]
+  push:
 
 jobs:
-  hello:
+  run-aci:
     runs-on: ubuntu-latest
     steps:
-      - uses: khan/pull-request-comment-trigger@master
-        id: check
-        with:
-          trigger: '#hello'
-      - run: 'echo Found it!'
-        if: steps.check.outputs.triggered == 'true'
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  eyes:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: khan/pull-request-comment-trigger@master
-        id: check
-        with:
-          trigger: '#look'
-          reaction: eyes
+      - name: Download ACI integration
+        run: ./scripts/install_linux.sh
+
+      - name: "create aci context"
+        run: 'docker context create aci --help'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-      - run: 'echo Found it!'
-        if: steps.check.outputs.triggered == 'true'
